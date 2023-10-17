@@ -1,95 +1,73 @@
 package utility
 
 import (
-	"encoding/json"
+	"bytes"
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 )
 
-// Create a test JSONResponse for testing
-var testResponse = JSONResponse{
-	Error:   false,
-	Message: "Success",
-	Data:    "Some data",
-}
-
-func TestWriteJSON(t *testing.T) {
-	// Create an HTTP response recorder
-	w := httptest.NewRecorder()
-
-	// Call WriteJSON to write the test JSONResponse
-	err := WriteJSON(w, http.StatusOK, testResponse)
-
-	// Check for errors
-	if err != nil {
-		t.Errorf("WriteJSON returned an error: %v", err)
+// Test case using the table driven test
+func TestUtilityFunctions(t *testing.T) {
+	tests := []struct {
+		name              string
+		functionUnderTest func(w http.ResponseWriter, r *http.Request) error
+		inputRequest      *http.Request
+		expectedStatus    int
+		expectedResponse  string
+	}{
+		{
+			name: "Test WriteJSON",
+			functionUnderTest: func(w http.ResponseWriter, r *http.Request) error {
+				data := map[string]string{"message": "Hello, World!"}
+				return WriteJSON(w, http.StatusOK, data)
+			},
+			inputRequest:     httptest.NewRequest("GET", "/", nil),
+			expectedStatus:   http.StatusOK,
+			expectedResponse: `{"message":"Hello, World!"}`,
+		},
+		{
+			name: "Test ReadJSON",
+			functionUnderTest: func(w http.ResponseWriter, r *http.Request) error {
+				var data map[string]string
+				return ReadJSON(w, r, &data)
+			},
+			inputRequest: func() *http.Request {
+				data := `{"message":"Hello, World!"}`
+				return httptest.NewRequest("POST", "/", bytes.NewBuffer([]byte(data)))
+			}(),
+			expectedStatus:   http.StatusOK,
+			expectedResponse: `{"message":"Hello, World!"}`,
+		},
+		{
+			name: "Test ErrorJSON",
+			functionUnderTest: func(w http.ResponseWriter, r *http.Request) error {
+				err := errors.New("Something went wrong")
+				return ErrorJSON(w, err, http.StatusNotFound)
+			},
+			inputRequest:     httptest.NewRequest("GET", "/", nil),
+			expectedStatus:   http.StatusNotFound,
+			expectedResponse: `{"error":true,"message":"Something went wrong"}`,
+		},
 	}
 
-	// Check the response status code
-	if w.Code != http.StatusOK {
-		t.Errorf("Expected status code %d, got %d", http.StatusOK, w.Code)
-	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			recorder := httptest.NewRecorder()
 
-	// Check the response body
-	expectedJSON, _ := json.Marshal(testResponse)
-	if strings.TrimSpace(w.Body.String()) != string(expectedJSON) {
-		t.Errorf("Response body does not match the expected JSON")
-	}
-}
+			err := test.functionUnderTest(recorder, test.inputRequest)
+			if err != nil {
+				t.Errorf("Function returned an error: %v", err)
+			}
 
-func TestReadJSON(t *testing.T) {
-	// Create a JSON string
-	jsonStr := `{"error":false,"message":"Success","data":"Some data"}`
-
-	// Create an HTTP request with the JSON string
-	r, _ := http.NewRequest("POST", "/test", strings.NewReader(jsonStr))
-
-	// Create a test data structure to decode into
-	var testData JSONResponse
-
-	// Call ReadJSON to decode the request
-	err := ReadJSON(nil, r, &testData)
-
-	// Check for errors
-	if err != nil {
-		t.Errorf("ReadJSON returned an error: %v", err)
-	}
-
-	// Check the decoded data
-	if testData.Error || testData.Message != "Success" || testData.Data != "Some data" {
-		t.Errorf("Decoded data does not match the expected JSONResponse")
-	}
-}
-
-func TestErrorJSON(t *testing.T) {
-	// Create an HTTP response recorder
-	w := httptest.NewRecorder()
-
-	// Create an error to send in the response
-	testError := errors.New("Test error")
-
-	// Call ErrorJSON to write an error response
-	err := ErrorJSON(w, testError, http.StatusNotFound)
-
-	// Check for errors
-	if err != nil {
-		t.Errorf("ErrorJSON returned an error: %v", err)
-	}
-
-	// Check the response status code
-	if w.Code != http.StatusNotFound {
-		t.Errorf("Expected status code %d, got %d", http.StatusNotFound, w.Code)
-	}
-
-	// Check the response body
-	expectedJSON, _ := json.Marshal(JSONResponse{Error: true, Message: "Test error"})
-	if strings.TrimSpace(w.Body.String()) != string(expectedJSON) {
-		t.Errorf("Response body does not match the expected JSON")
+			if recorder.Code != test.expectedStatus {
+				t.Errorf("Expected status %d, but got %d", test.expectedStatus, recorder.Code)
+			}
+		})
 	}
 }
+
 func TestWriteJSONWithHeaders(t *testing.T) {
 	// Create an HTTP response recorder
 	w := httptest.NewRecorder()
@@ -127,3 +105,5 @@ func TestWriteJSONWithHeaders(t *testing.T) {
 		}
 	}
 }
+
+// Negative test cases

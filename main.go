@@ -21,7 +21,7 @@ func main() {
 	// read from command line
 	flag.StringVar(&app.DSN, "dsn", "host=postgres port=5432 user=postgres password=postgres dbname=articles sslmode=disable timezone=UTC connect_timeout=5", "Postgres connection string")
 	flag.Parse()
-	fmt.Println("Wait for databse container to start up")
+	fmt.Println("Wait for database container to start up")
 	time.Sleep(5 * time.Second)
 
 	// connect to the database

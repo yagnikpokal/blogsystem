@@ -9,8 +9,9 @@ import (
 )
 
 type Application struct {
-	DSN string
-	DB  repository.DatabaseRepo
+	DSN     string
+	DB      repository.DatabaseRepo
+	Utility UtilityInterface
 }
 
 func (app *Application) Routes() http.Handler {

@@ -54,6 +54,7 @@ func (m *PostgresDBRepo) AllArticles() ([]*models.Articles, error) {
 
 	rows, err := m.DB.QueryContext(ctx, query)
 	if err != nil {
+		log.Println("Error in getting query: ", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -69,6 +70,7 @@ func (m *PostgresDBRepo) AllArticles() ([]*models.Articles, error) {
 			&article.Author,
 		)
 		if err != nil {
+			log.Println("Error in getting next row: ", err)
 			return nil, err
 		}
 
@@ -101,8 +103,11 @@ func (m *PostgresDBRepo) OneArticle(id int) (*models.Articles, error) {
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
+			log.Println("No article found: ", err)
+
 			return nil, nil // Article not found
 		}
+		log.Println("Error in getting query: ", err)
 		return nil, err // Other error
 	}
 
@@ -123,6 +128,7 @@ func (m *PostgresDBRepo) CreateArticle(article *models.Articles) (int, error) {
 	var articleID int
 	err := m.DB.QueryRowContext(ctx, query, article.Title, article.Content, article.Author).Scan(&articleID)
 	if err != nil {
+		log.Println("Error in getting query: ", err)
 		return 0, err
 	}
 

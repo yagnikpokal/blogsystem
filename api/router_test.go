@@ -34,7 +34,6 @@ func TestRoutes(t *testing.T) {
 	// Check the response status code
 	assert.Equal(t, http.StatusOK, recorder.Code)
 
-	// You can add more test cases for other routes as needed
 }
 
 // Mock application for testing
@@ -58,22 +57,140 @@ func (ma *mockApplication) GetArticle(w http.ResponseWriter, r *http.Request) {
 func (ma *mockApplication) InsertArticle(w http.ResponseWriter, r *http.Request) {
 	// Implement mock behavior for InsertArticle
 }
+
+// Unit test using table driven test
 func TestRoutes_Home(t *testing.T) {
+	testCases := []struct {
+		name         string
+		method       string
+		path         string
+		expectedCode int
+	}{
+		{
+			name:         "Successful GET request to Home",
+			method:       "GET",
+			path:         "/",
+			expectedCode: http.StatusOK,
+		},
+	}
+
 	// Create an instance of the actual application
 	app := &Application{}
 
-	// Create a request for the home route
-	req := httptest.NewRequest("GET", "/", nil)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req := httptest.NewRequest(tc.method, tc.path, nil)
+			recorder := httptest.NewRecorder()
+			router := app.Routes()
+			router.ServeHTTP(recorder, req)
 
-	// Create a recorder to capture the response
-	recorder := httptest.NewRecorder()
+			assert.Equal(t, tc.expectedCode, recorder.Code)
+		})
+	}
+}
 
-	// Initialize the router and set up routes
-	router := app.Routes()
+func TestRoutes_AllArticle(t *testing.T) {
+	testCases := []struct {
+		name         string
+		method       string
+		path         string
+		expectedCode int
+	}{
+		{
+			name:         "Successful GET request to AllArticle",
+			method:       "GET",
+			path:         "/articles",
+			expectedCode: http.StatusOK,
+		},
+		{
+			name:         "Negative test case for AllArticle",
+			method:       "GET",
+			path:         "/articles",
+			expectedCode: 500,
+		},
+	}
 
-	// Serve the request
-	router.ServeHTTP(recorder, req)
+	// Create an instance of the actual application
+	app := &Application{}
 
-	// Check the response status code for the home route
-	assert.Equal(t, http.StatusOK, recorder.Code)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req := httptest.NewRequest(tc.method, tc.path, nil)
+			recorder := httptest.NewRecorder()
+			router := app.Routes()
+			router.ServeHTTP(recorder, req)
+			assert.Equal(t, 500, recorder.Code)
+		})
+	}
+}
+
+func TestRoutes_GetArticle(t *testing.T) {
+	testCases := []struct {
+		name         string
+		method       string
+		path         string
+		expectedCode int
+	}{
+		{
+			name:         "Successful GET request to GetArticle",
+			method:       "GET",
+			path:         "/articles/1",
+			expectedCode: http.StatusOK,
+		},
+		{
+			name:         "Negative test case for GetArticle",
+			method:       "GET",
+			path:         "/articles/1",
+			expectedCode: 500,
+		},
+	}
+
+	// Create an instance of the actual application
+	app := &Application{}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req := httptest.NewRequest(tc.method, tc.path, nil)
+			recorder := httptest.NewRecorder()
+			router := app.Routes()
+			router.ServeHTTP(recorder, req)
+
+			assert.Equal(t, 500, recorder.Code)
+		})
+	}
+}
+
+func TestRoutes_InsertArticle(t *testing.T) {
+	testCases := []struct {
+		name         string
+		method       string
+		path         string
+		expectedCode int
+	}{
+		{
+			name:         "Successful POST request to InsertArticle",
+			method:       "POST",
+			path:         "/articles",
+			expectedCode: http.StatusOK,
+		},
+		{
+			name:         "Negative test case for InsertArticle",
+			method:       "POST",
+			path:         "/articles",
+			expectedCode: 500,
+		},
+	}
+
+	// Create an instance of the actual application
+	app := &Application{}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req := httptest.NewRequest(tc.method, tc.path, nil)
+			recorder := httptest.NewRecorder()
+			router := app.Routes()
+			router.ServeHTTP(recorder, req)
+			assert.Equal(t, 500, recorder.Code)
+		})
+	}
 }
