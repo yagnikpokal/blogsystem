@@ -48,7 +48,7 @@ curl --location 'http://localhost:8080/articles'
 ![Alt text](<doc/image 7.png>)
 
 ## Clean code / Development practice
-- Followed by using the separate busines logic, db, utility, models, constatnts, db query etc
+- Followed by using the separate business logic, db, utility, models, constants, db query, etc
 ```
 tree
 .
