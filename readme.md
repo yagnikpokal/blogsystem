@@ -1,7 +1,7 @@
 # Backend Coding Challenge
 
 ## Run the app on the docker
- - Created the docker and docker compose file to run the go code and databse into the separate container
+ - Created the docker and docker compose file to run the go code and database into the separate container
 ```
 make run
 ```
