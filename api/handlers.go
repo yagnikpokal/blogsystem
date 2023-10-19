@@ -1,47 +1,63 @@
 package api
 
 import (
+	appconst "backend/pkg/appconstant"
 	"backend/pkg/models"
 	"backend/pkg/utility"
+	"database/sql"
+	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
 )
 
-// Home displays the status of the api, as JSON.
-func (app *Application) Home(w http.ResponseWriter, r *http.Request) {
-	var payload = struct {
-		Status  string `json:"status"`
-		Message string `json:"message"`
-		Version string `json:"version"`
-	}{
-		Status:  "active",
-		Message: "Go articles up and running",
-		Version: "1.0.0",
-	}
+/*
+Do not remove below intrfaces it uses for mock data generation
+Command to generate the mock data
+make mocks
+*/
+type DBInterface interface {
+	Connection() *sql.DB
+	CreateTable()
+	AllArticles() ([]models.Article, error)
+	CreateArticle(article *models.Article) (int, error)
+	OneArticle(id int) (*models.Article, error)
+}
 
-	_ = utility.WriteJSON(w, http.StatusOK, payload)
+type UtilityInterface interface {
+	WriteJSON(w http.ResponseWriter, status int, data interface{}) error
+	ReadJSON(w http.ResponseWriter, r *http.Request, data interface{}) error
+}
+
+// HealthCheck displays the status of the api, as JSON.
+func (app *Application) HealthCheck(w http.ResponseWriter, r *http.Request) {
+	// Create the response struct
+	var response models.Response
+
+	response.Status = http.StatusOK
+	response.Message = appconst.Success
+	response.Data = appconst.Serverup
+
+	utility.WriteJSON(w, http.StatusOK, response)
 }
 
 func (app *Application) AllArticle(w http.ResponseWriter, r *http.Request) {
 	// Retrieve the list of articles from the database
-	articles, _ := app.DB.AllArticles()
-
-	// Prepare the response map
-	response := map[string]interface{}{
-		"status":  200,
-		"message": "Success",
-		"data":    []map[string]interface{}{},
+	articles, err := app.ArticleService.GetAllArticles()
+	if err != nil {
+		// Handle the error
+		log.Println(appconst.Errorconst, err)
+		utility.WriteJSON(w, http.StatusInternalServerError, models.Response{Data: nil, Status: http.StatusInternalServerError, Message: appconst.Errorconst + err.Error()})
+		return
 	}
+	// Create the response struct
+	var response models.Response
 
-	// Check if there are articles, then add them to the response map
-	if len(articles) > 0 {
-		for _, article := range articles {
-
-			response["data"] = append(response["data"].([]map[string]interface{}), map[string]interface{}{"id": article.ID, "title": article.Title, "content": article.Content, "author": article.Author})
-		}
-	}
+	response.Status = http.StatusOK
+	response.Message = appconst.Success
+	// Set the response data as a slice of articles
+	response.Data = articles
 
 	// Set the response headers and write the JSON response
 	utility.WriteJSON(w, http.StatusOK, response)
@@ -52,43 +68,53 @@ func (app *Application) GetArticle(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	articleID, err := strconv.Atoi(id)
 	if err != nil {
-		utility.ErrorJSON(w, err)
+		log.Println(appconst.Parsingarticle, err)
+		utility.WriteJSON(w, http.StatusBadRequest, models.Response{Data: nil, Status: http.StatusBadRequest, Message: appconst.Parsingarticle + err.Error()})
+		return
+	}
+	// Retrieve the article from the service
+	article, err := app.ArticleService.GetArticleByID(articleID)
+	if err != nil {
+		// Handle the error
+		log.Println(appconst.Retrivearticle, err)
+		utility.WriteJSON(w, http.StatusInternalServerError, models.Response{Data: nil, Status: http.StatusInternalServerError, Message: appconst.Retrivearticle + err.Error()})
 		return
 	}
 
-	// Retrieve the article from the database
-	article, _ := app.DB.OneArticle(articleID)
-
-	// Prepare the response map
-	response := map[string]interface{}{
-		"status":  200,
-		"message": "Success",
-		"data":    []map[string]interface{}{},
-	}
-
-	// Check if the article is not nil, then add it to the response map
-
-	response["data"] = append(response["data"].([]map[string]interface{}), map[string]interface{}{"id": article.ID, "title": article.Title, "content": article.Content, "author": article.Author})
-
-	// Set the response headers and write the JSON response
+	var response models.Response
+	response.Status = http.StatusOK
+	response.Message = appconst.Success
+	response.Data = article
 	utility.WriteJSON(w, http.StatusOK, response)
 }
 
 func (app *Application) InsertArticle(w http.ResponseWriter, r *http.Request) {
 	// Parse the JSON request body into an Article struct
-	var article models.Articles
-	_ = utility.ReadJSON(w, r, &article)
+	var article models.Article
+	err := utility.ReadJSON(w, r, &article)
+	if err != nil {
+		log.Println(appconst.JSONparsing, err)
+		utility.WriteJSON(w, http.StatusBadRequest, models.Response{Data: nil, Status: http.StatusBadRequest, Message: appconst.JSONparsing})
+		return
+	}
 
-	// Insert the article into the database
-	articleID, _ := app.DB.CreateArticle(&article)
+	// Insert the article into the service
+	articleID, err := app.ArticleService.CreateArticle(&article)
+	if err != nil {
+		// Handle the error here
+		log.Println(appconst.Articlenotcreated, err)
+		utility.WriteJSON(w, http.StatusInternalServerError, models.Response{Data: nil, Status: http.StatusInternalServerError, Message: appconst.Articlenotcreated + err.Error()})
+		return
+	}
+
+	// Create the response struct
+	var response models.Response
+	response.Status = http.StatusCreated
+	response.Message = appconst.Success
 
 	// Prepare the response JSON
-	response := map[string]interface{}{
-		"status":  201,
-		"message": "Success",
-		"data": map[string]interface{}{
-			"id": articleID,
-		},
+	response.Data = models.Article{
+		ID: articleID,
 	}
 
 	// Set the response headers and write the JSON response
