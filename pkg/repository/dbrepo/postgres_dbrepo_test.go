@@ -12,7 +12,7 @@ import (
 )
 
 type DBRepo interface {
-	OneArticle(id int) (*models.Articles, error)
+	OneArticle(id int) (*models.Article, error)
 }
 
 // Test case using the table driven test
@@ -87,7 +87,7 @@ func TestPostgresDBRepo(t *testing.T) {
 					WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 			},
 			repoAction: func(repo *PostgresDBRepo) error {
-				_, err := repo.CreateArticle(&models.Articles{
+				_, err := repo.CreateArticle(&models.Article{
 					Title:   "Title1",
 					Content: "Content1",
 					Author:  "Author1",
@@ -175,7 +175,7 @@ func TestCreateArticleError(t *testing.T) {
 		WillReturnError(fmt.Errorf("Test error"))
 
 	// Create a sample article
-	article := &models.Articles{
+	article := &models.Article{
 		Title:   "Test Article",
 		Content: "Test Content",
 		Author:  "Test Author",

@@ -18,13 +18,13 @@ import (
 func TestAllArticle(t *testing.T) {
 	testCases := []struct {
 		name                    string
-		mockDBAllArticlesReturn []models.Articles
+		mockDBAllArticlesReturn []models.Article
 		expectedStatusCode      int
 		expectedResponseBody    string
 	}{
 		{
 			name: "Success Case",
-			mockDBAllArticlesReturn: []models.Articles{
+			mockDBAllArticlesReturn: []models.Article{
 				{ID: 1, Title: "Article 1", Content: "Content 1", Author: "Author 1"},
 				{ID: 2, Title: "Article 2", Content: "Content 2", Author: "Author 2"},
 			},
@@ -110,7 +110,7 @@ func TestInsertArticle(t *testing.T) {
 	}
 
 	// Create a sample article for your test
-	sampleArticle := &models.Articles{
+	sampleArticle := &models.Article{
 		ID:      1,
 		Title:   "Sample Article",
 		Content: "Sample Content",
@@ -160,7 +160,7 @@ func TestInsertArticle_Error(t *testing.T) {
 	}
 
 	// Create a sample article for your test
-	sampleArticle := &models.Articles{
+	sampleArticle := &models.Article{
 		ID:      1,
 		Title:   "Sample Article",
 		Content: "Sample Content",
@@ -197,7 +197,7 @@ func TestGetArticle_Error(t *testing.T) {
 		name                   string
 		mockArticleService     func(ctrl *gomock.Controller) services.ArticleServices
 		mockUtility            func(ctrl *gomock.Controller) UtilityInterface
-		mockDBGetArticleReturn *models.Articles
+		mockDBGetArticleReturn *models.Article
 		expectedStatusCode     int
 		expectedResponseBody   string
 	}{

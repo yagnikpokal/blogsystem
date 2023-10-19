@@ -16,9 +16,9 @@ type PostgresDBRepo struct {
 type DatabaseRepo interface {
 	Connection() *sql.DB
 	CreateTable()
-	AllArticles() ([]models.Articles, error)
-	CreateArticle(article *models.Articles) (int, error)
-	OneArticle(id int) (*models.Articles, error)
+	AllArticles() ([]models.Article, error)
+	CreateArticle(article *models.Article) (int, error)
+	OneArticle(id int) (*models.Article, error)
 }
 
 const dbTimeout = time.Second * 3
@@ -47,7 +47,7 @@ func (m *PostgresDBRepo) CreateTable() {
 }
 
 // Return all articles
-func (m *PostgresDBRepo) AllArticles() ([]models.Articles, error) {
+func (m *PostgresDBRepo) AllArticles() ([]models.Article, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
@@ -67,10 +67,10 @@ func (m *PostgresDBRepo) AllArticles() ([]models.Articles, error) {
 	}
 	defer rows.Close()
 
-	var articlesList []models.Articles
+	var articlesList []models.Article
 
 	for rows.Next() {
-		var article models.Articles
+		var article models.Article
 		err := rows.Scan(
 			&article.ID,
 			&article.Title,
@@ -89,7 +89,7 @@ func (m *PostgresDBRepo) AllArticles() ([]models.Articles, error) {
 }
 
 // Retrive one article
-func (m *PostgresDBRepo) OneArticle(id int) (*models.Articles, error) {
+func (m *PostgresDBRepo) OneArticle(id int) (*models.Article, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
@@ -102,7 +102,7 @@ func (m *PostgresDBRepo) OneArticle(id int) (*models.Articles, error) {
             id = $1
     `
 
-	var article models.Articles
+	var article models.Article
 	err := m.DB.QueryRowContext(ctx, query, id).Scan(
 		&article.ID,
 		&article.Title,
@@ -122,7 +122,7 @@ func (m *PostgresDBRepo) OneArticle(id int) (*models.Articles, error) {
 }
 
 // Create new article
-func (m *PostgresDBRepo) CreateArticle(article *models.Articles) (int, error) {
+func (m *PostgresDBRepo) CreateArticle(article *models.Article) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 

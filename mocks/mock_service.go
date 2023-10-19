@@ -35,7 +35,7 @@ func (m *MockArticleServices) EXPECT() *MockArticleServicesMockRecorder {
 }
 
 // CreateArticle mocks base method.
-func (m *MockArticleServices) CreateArticle(article *models.Articles) (int, error) {
+func (m *MockArticleServices) CreateArticle(article *models.Article) (int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateArticle", article)
 	ret0, _ := ret[0].(int)
@@ -50,10 +50,10 @@ func (mr *MockArticleServicesMockRecorder) CreateArticle(article interface{}) *g
 }
 
 // GetAllArticles mocks base method.
-func (m *MockArticleServices) GetAllArticles() ([]models.Articles, error) {
+func (m *MockArticleServices) GetAllArticles() ([]models.Article, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAllArticles")
-	ret0, _ := ret[0].([]models.Articles)
+	ret0, _ := ret[0].([]models.Article)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -65,10 +65,10 @@ func (mr *MockArticleServicesMockRecorder) GetAllArticles() *gomock.Call {
 }
 
 // GetArticleByID mocks base method.
-func (m *MockArticleServices) GetArticleByID(id int) (*models.Articles, error) {
+func (m *MockArticleServices) GetArticleByID(id int) (*models.Article, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetArticleByID", id)
-	ret0, _ := ret[0].(*models.Articles)
+	ret0, _ := ret[0].(*models.Article)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

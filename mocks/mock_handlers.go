@@ -37,10 +37,10 @@ func (m *MockDBInterface) EXPECT() *MockDBInterfaceMockRecorder {
 }
 
 // AllArticles mocks base method.
-func (m *MockDBInterface) AllArticles() ([]models.Articles, error) {
+func (m *MockDBInterface) AllArticles() ([]models.Article, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AllArticles")
-	ret0, _ := ret[0].([]models.Articles)
+	ret0, _ := ret[0].([]models.Article)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -66,7 +66,7 @@ func (mr *MockDBInterfaceMockRecorder) Connection() *gomock.Call {
 }
 
 // CreateArticle mocks base method.
-func (m *MockDBInterface) CreateArticle(article *models.Articles) (int, error) {
+func (m *MockDBInterface) CreateArticle(article *models.Article) (int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateArticle", article)
 	ret0, _ := ret[0].(int)
@@ -93,10 +93,10 @@ func (mr *MockDBInterfaceMockRecorder) CreateTable() *gomock.Call {
 }
 
 // OneArticle mocks base method.
-func (m *MockDBInterface) OneArticle(id int) (*models.Articles, error) {
+func (m *MockDBInterface) OneArticle(id int) (*models.Article, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "OneArticle", id)
-	ret0, _ := ret[0].(*models.Articles)
+	ret0, _ := ret[0].(*models.Article)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

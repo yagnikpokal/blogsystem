@@ -20,9 +20,9 @@ make mocks
 type DBInterface interface {
 	Connection() *sql.DB
 	CreateTable()
-	AllArticles() ([]models.Articles, error)
-	CreateArticle(article *models.Articles) (int, error)
-	OneArticle(id int) (*models.Articles, error)
+	AllArticles() ([]models.Article, error)
+	CreateArticle(article *models.Article) (int, error)
+	OneArticle(id int) (*models.Article, error)
 }
 
 type UtilityInterface interface {
@@ -90,7 +90,7 @@ func (app *Application) GetArticle(w http.ResponseWriter, r *http.Request) {
 
 func (app *Application) InsertArticle(w http.ResponseWriter, r *http.Request) {
 	// Parse the JSON request body into an Article struct
-	var article models.Articles
+	var article models.Article
 	err := utility.ReadJSON(w, r, &article)
 	if err != nil {
 		log.Println(appconst.JSONparsing, err)
@@ -113,7 +113,7 @@ func (app *Application) InsertArticle(w http.ResponseWriter, r *http.Request) {
 	response.Message = appconst.Success
 
 	// Prepare the response JSON
-	response.Data = models.Articles{
+	response.Data = models.Article{
 		ID: articleID,
 	}
 
