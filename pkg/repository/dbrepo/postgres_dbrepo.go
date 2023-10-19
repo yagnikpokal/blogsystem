@@ -1,6 +1,7 @@
 package dbrepo
 
 import (
+	appconst "backend/pkg/appconstant"
 	"backend/pkg/models"
 	"context"
 	"database/sql"
@@ -11,6 +12,13 @@ import (
 
 type PostgresDBRepo struct {
 	DB *sql.DB
+}
+type DatabaseRepo interface {
+	Connection() *sql.DB
+	CreateTable()
+	AllArticles() ([]models.Articles, error)
+	CreateArticle(article *models.Articles) (int, error)
+	OneArticle(id int) (*models.Articles, error)
 }
 
 const dbTimeout = time.Second * 3
@@ -35,11 +43,11 @@ func (m *PostgresDBRepo) CreateTable() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Table 'articles' created successfully!")
+	fmt.Println(appconst.CreateArticleTable)
 }
 
 // Return all articles
-func (m *PostgresDBRepo) AllArticles() ([]*models.Articles, error) {
+func (m *PostgresDBRepo) AllArticles() ([]models.Articles, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
@@ -54,12 +62,12 @@ func (m *PostgresDBRepo) AllArticles() ([]*models.Articles, error) {
 
 	rows, err := m.DB.QueryContext(ctx, query)
 	if err != nil {
-		log.Println("Error in getting query: ", err)
+		log.Println(appconst.Queryerror, err)
 		return nil, err
 	}
 	defer rows.Close()
 
-	var articlesList []*models.Articles
+	var articlesList []models.Articles
 
 	for rows.Next() {
 		var article models.Articles
@@ -70,11 +78,11 @@ func (m *PostgresDBRepo) AllArticles() ([]*models.Articles, error) {
 			&article.Author,
 		)
 		if err != nil {
-			log.Println("Error in getting next row: ", err)
+			log.Println(appconst.Nextrow, err)
 			return nil, err
 		}
 
-		articlesList = append(articlesList, &article)
+		articlesList = append(articlesList, article)
 	}
 
 	return articlesList, nil
@@ -103,11 +111,10 @@ func (m *PostgresDBRepo) OneArticle(id int) (*models.Articles, error) {
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			log.Println("No article found: ", err)
-
-			return nil, nil // Article not found
+			log.Println(appconst.NoArticleforid, err)
+			return nil, err // Article not found
 		}
-		log.Println("Error in getting query: ", err)
+		log.Println(appconst.Queryerror, err)
 		return nil, err // Other error
 	}
 
@@ -128,7 +135,7 @@ func (m *PostgresDBRepo) CreateArticle(article *models.Articles) (int, error) {
 	var articleID int
 	err := m.DB.QueryRowContext(ctx, query, article.Title, article.Content, article.Author).Scan(&articleID)
 	if err != nil {
-		log.Println("Error in getting query: ", err)
+		log.Println(appconst.Queryerror, err)
 		return 0, err
 	}
 

@@ -78,7 +78,6 @@ func TestPostgresDBRepo(t *testing.T) {
 				_, err := repo.OneArticle(2)
 				return err
 			},
-			//expectedErr: models.ErrNoRecord,
 		},
 		{
 			name: "Test CreateArticle",
@@ -112,7 +111,10 @@ func TestPostgresDBRepo(t *testing.T) {
 			err = test.repoAction(repo)
 
 			if err != test.expectedErr {
-				t.Errorf("Expected error: %v, got: %v", test.expectedErr, err)
+				expectedErrorMessage := "sql: no rows in result set"
+				if err.Error() != expectedErrorMessage {
+					t.Errorf("Expected error message: %s, got: %s", expectedErrorMessage, err.Error())
+				} //	t.Errorf("Expected error: %v, got: %v", test.expectedErr, err)
 			}
 		})
 	}

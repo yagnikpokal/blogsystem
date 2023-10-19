@@ -2,9 +2,10 @@ package main
 
 import (
 	"backend/api"
-	portconst "backend/pkg/const"
+	appconst "backend/pkg/appconstant"
 	"backend/pkg/db"
 	"backend/pkg/repository/dbrepo"
+	services "backend/services/articles"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -16,15 +17,15 @@ import (
 )
 
 func main() {
-	// set application config
+	// Set application config
 	var app api.Application
-	// read from command line
+	// Read from the command line
 	flag.StringVar(&app.DSN, "dsn", "host=postgres port=5432 user=postgres password=postgres dbname=articles sslmode=disable timezone=UTC connect_timeout=5", "Postgres connection string")
 	flag.Parse()
-	fmt.Println("Wait for database container to start up")
+	fmt.Println(appconst.DatabseWait)
 	time.Sleep(5 * time.Second)
 
-	// connect to the database
+	// Connect to the database
 	conn, err := db.ConnectToDB(app.DSN)
 	if err != nil {
 		log.Fatal(err)
@@ -32,13 +33,19 @@ func main() {
 	app.DB = &dbrepo.PostgresDBRepo{DB: conn}
 	defer app.DB.Connection().Close()
 
-	// Create the table if not exist in container
+	// Create the table if it does not exist in the container
 	app.DB.CreateTable()
 
-	log.Println("Starting application on port", portconst.Port)
+	// Initialize the ArticleService with the DatabaseRepo
+	articleService := services.NewArticleService(app.DB)
 
-	// start a web server
-	err = http.ListenAndServe(fmt.Sprintf(":%d", portconst.Port), app.Routes())
+	// Set the ArticleService in the Application
+	app.ArticleService = articleService
+
+	log.Println(appconst.Startapp, appconst.Port)
+
+	// Start a web server
+	err = http.ListenAndServe(fmt.Sprintf(":%d", appconst.Port), app.Routes())
 	if err != nil {
 		log.Fatal(err)
 	}

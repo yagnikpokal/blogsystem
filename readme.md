@@ -3,7 +3,7 @@
 ## Run the app on the docker
  - Created the docker and docker compose file to run the go code and databse into the separate container
 ```
-docker compose up
+make run
 ```
 ![!\[Alt text\](image-3.png)](<doc/image 1.png>)
 
@@ -50,14 +50,14 @@ curl --location 'http://localhost:8080/articles'
 ## Clean code / Development practice
 - Followed by using the separate busines logic, db, utility, models, constatnts, db query etc
 ```
+tree
 .
 ├── api
 │   ├── handlers.go
 │   ├── handler_test.go
-│   ├── mocks
-│   │   └── mock_handlers.go
 │   ├── router_test.go
 │   └── routes.go
+├── coverage.txt
 ├── doc
 │   ├── image 1.png
 │   ├── image 2.png
@@ -69,12 +69,21 @@ curl --location 'http://localhost:8080/articles'
 │   └── image 8.png
 ├── docker-compose.yml
 ├── Dockerfile
+├── do.sh
 ├── go.mod
 ├── go.sum
 ├── main.go
+├── Makefile
+├── mocks
+│   ├── mock_handlers.go
+│   ├── mock_routes.go
+│   └── mock_service.go
 ├── pkg
-│   ├── const
-│   │   └── constant.go
+│   ├── appconstant
+│   │   ├── error.go
+│   │   ├── log.go
+│   │   ├── message.go
+│   │   └── port.go
 │   ├── db
 │   │   ├── db.go
 │   │   └── db_test.go
@@ -82,34 +91,37 @@ curl --location 'http://localhost:8080/articles'
 │   │   ├── articles.go
 │   │   └── response.go
 │   ├── repository
-│   │   ├── dbrepo
-│   │   │   ├── postgres_dbrepo.go
-│   │   │   └── postgres_dbrepo_test.go
-│   │   └── repository.go
+│   │   └── dbrepo
+│   │       ├── postgres_dbrepo.go
+│   │       └── postgres_dbrepo_test.go
 │   └── utility
 │       ├── utils.go
 │       └── utils_test.go
-└── readme.md
+├── readme.md
+└── services
+    └── articles
+        ├── articles_service.go
+        └── articles_services_test.go
+
+12 directories, 38 files, 1808 lines
 ```
 
 ## Test coverage
+```
+make test
+```
 - Achieved >85% test coverage
 
+```
+make cover
+```
 
 ```
-go test ./... -cover
-```
-
-```
-?       backend [no test files]
-?       backend/api/mocks       [no test files]
-?       backend/pkg/models      [no test files]
-?       backend/pkg/repository  [no test files]
-?       backend/pkg/const       [no test files]
-ok      backend/api     0.011s                   coverage: 85.4% of statements
-ok      backend/pkg/db  (cached)                 coverage: 91.7% of statements
-ok      backend/pkg/repository/dbrepo   (cached) coverage: 88.6% of statements
-ok      backend/pkg/utility     (cached)         coverage: 86.7% of statements
+ok      backend/api     (cached)                  coverage: 85.2% of statements
+ok      backend/pkg/db  (cached)                  coverage: 91.7% of statements
+ok      backend/pkg/repository/dbrepo   (cached)  coverage: 88.6% of statements
+ok      backend/pkg/utility     (cached)          coverage: 86.7% of statements
+ok      backend/services/articles       (cached)  coverage: 100.0% of statements
 ```
 ## Error logging in containers
 ![Alt text](<doc/image 8.png>)
