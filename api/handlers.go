@@ -13,9 +13,8 @@ import (
 )
 
 /*
-Do not remove below intrfaces it uses for mock data generation
-Command to generate the mock data
-make mocks
+Do not remove the following interfaces, as they are used for mock data generation.
+Command to generate mock data: make mocks
 */
 type DBInterface interface {
 	Connection() *sql.DB
@@ -30,7 +29,17 @@ type UtilityInterface interface {
 	ReadJSON(w http.ResponseWriter, r *http.Request, data interface{}) error
 }
 
-// HealthCheck displays the status of the api, as JSON.
+// swagger:route GET / healthCheck
+//
+// Health Check
+// Performs a basic health check of the service.
+//
+// Produces:
+// - application/json
+//
+// Responses:
+//
+//	200: Response
 func (app *Application) HealthCheck(w http.ResponseWriter, r *http.Request) {
 	// Create the response struct
 	var response models.Response
@@ -42,6 +51,17 @@ func (app *Application) HealthCheck(w http.ResponseWriter, r *http.Request) {
 	utility.WriteJSON(w, http.StatusOK, response)
 }
 
+// swagger:route GET /articles allArticle
+// Get a list of articles
+//
+// Retrieve a list of articles.
+//
+// Produces:
+// - application/json
+//
+// Responses:
+//
+//	200: Response
 func (app *Application) AllArticle(w http.ResponseWriter, r *http.Request) {
 	// Retrieve the list of articles from the database
 	articles, err := app.ArticleService.GetAllArticles()
@@ -62,6 +82,36 @@ func (app *Application) AllArticle(w http.ResponseWriter, r *http.Request) {
 	// Set the response headers and write the JSON response
 	utility.WriteJSON(w, http.StatusOK, response)
 }
+
+// swagger:route GET /articles/{id} getArticle
+//
+// Retrieve an article by its ID.
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+
+//   in: path
+//   description: The ID of the article.
+//   required: true
+//   schema:
+//     type: integer
+//   example: 1  # Sample ID value
+// responses:
+//   "200":
+//     description: Success
+//     content:
+//       application/json:
+//         schema:
+//           $ref: '#/definitions/Article'
+//     example:
+//       status: 200
+//       message: Success
+//       data:
+//         id: 1
+//         title: "Second Article"
+//         content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 
 func (app *Application) GetArticle(w http.ResponseWriter, r *http.Request) {
 	// Get the article ID from the URL parameter
@@ -87,6 +137,40 @@ func (app *Application) GetArticle(w http.ResponseWriter, r *http.Request) {
 	response.Data = article
 	utility.WriteJSON(w, http.StatusOK, response)
 }
+
+// swagger:route POST /articles insertArticle
+//
+// Insert an article into the service.
+// ---
+// consumes:
+// - application/json
+// produces:
+// - application/json
+// parameters:
+
+//   in: body
+//   description: The article to be inserted.
+//   required: true
+//   schema:
+//     $ref: '#/definitions/Article'
+//   example:
+//     title: "Second Article"
+//     content: "Lorem ipsum dolor sit amet, "
+//     author: "John"
+// responses:
+//   "201":
+//     description: Success
+//     schema:
+//       $ref: '#/definitions/Article'
+//     example:
+//       id: 1
+//       title: "Second Article"
+//       content: "Lorem ipsum dolor sit amet, "
+//       author: "John"
+//   "500":
+//     description: Internal Server Error
+//     schema:
+//       $ref: '#/definitions/Response'
 
 func (app *Application) InsertArticle(w http.ResponseWriter, r *http.Request) {
 	// Parse the JSON request body into an Article struct

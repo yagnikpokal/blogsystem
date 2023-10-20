@@ -1,0 +1,146 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: Your API Title
+  description: Blog API
+host: localhost:8080
+basePath: /
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+
+paths:
+  /:
+    get:
+      summary: Health Check
+      description: Performs a basic health check of the service.
+      operationId: healthCheck
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Response'
+          example:
+            status: 200
+            message: "Success"
+            data: "Health Check is OK"
+
+  /articles:
+    get:
+      summary: Get a list of articles
+      description: Retrieve a list of articles.
+      operationId: allArticle
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/ArticleList'
+          example:
+            data:
+              - id: 1
+                title: "Article 1"
+                content: "This is the content of Article 1."
+              - id: 2
+                title: "Article 2"
+                content: "This is the content of Article 2."
+    post:
+      summary: Insert an article
+      description: Inserts an article into the service.
+      operationId: insertArticle
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: article
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Article'
+          example:
+            title: "Second Article"
+            content: "Lorem ipsum dolor sit amet, "
+            author: "John"
+      responses:
+        "201":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Article'
+          example:
+            id: 1
+            title: "Second Article"
+            content: "Lorem ipsum dolor sit amet, "
+            author: "John"
+
+  /articles/{id}:
+    get:
+      consumes:
+        - application/x-www-form-urlencoded
+      description: Retrieve an article by its ID.
+      operationId: getArticle
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the article.
+          schema:
+            type: integer
+          example: 1  # Sample ID value
+      responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Article'
+          example:
+            status: 200
+            message: Success
+            data:
+              id: 1
+              title: "Second Article"
+              content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+              author: "John"
+
+definitions:
+  Response:
+    type: object
+    properties:
+      status:
+        type: integer
+        format: int32
+      message:
+        type: string
+      data:
+        type: string
+
+  Article:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      title:
+        type: string
+      content:
+        type: string
+
+  ArticleList:
+    type: array
+    items:
+      $ref: '#/definitions/Article'

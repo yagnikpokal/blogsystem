@@ -28,6 +28,18 @@ mocks:
 	# Print a message indicating the process is complete
 	echo "Mock interfaces generated successfully."
 
+swaggergenerate:
+	SWAGGER_GENERATE_EXTENSION=false swagger generate spec -o swagger.yaml
+
+# Serve Swagger UI using the `swagger` command with the `-F swagger` flag.
+swagger:
+	swagger serve swagger.yaml -F swagger
+
+# Display help message.
+help:
+	@echo "Usage:"
+	@echo "make serve: Serve Swagger UI"
+	@echo "make help: Display help message"
 
 test:
 	go test ./...

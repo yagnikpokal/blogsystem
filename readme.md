@@ -117,7 +117,7 @@ make cover
 ```
 
 ```
-ok      backend/api     (cached)                  coverage: 85.2% of statements
+ok      backend/api     (cached)                  coverage: 85.7% of statements
 ok      backend/pkg/db  (cached)                  coverage: 91.7% of statements
 ok      backend/pkg/repository/dbrepo   (cached)  coverage: 88.6% of statements
 ok      backend/pkg/utility     (cached)          coverage: 86.7% of statements
@@ -125,3 +125,14 @@ ok      backend/services/articles       (cached)  coverage: 100.0% of statements
 ```
 ## Error logging in containers
 ![Alt text](<doc/image 8.png>)
+
+## Swagger run
+```
+make swagger
+```
+![Alt text](<doc/image 9.png>)
+
+## Swagger UI
+![Alt text](<doc/image 10.png>)
+
+![Alt text](<doc/image 11.png>)
