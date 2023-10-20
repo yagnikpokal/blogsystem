@@ -1,8 +1,19 @@
 package models
 
+// Article represents a article with id, title, and content.
+//
+// swagger:response Article
 type Article struct {
-	ID      int    `json:"id"`
-	Title   string `json:"title,omitempty"`
+	// ID of the article
+	// in: int
+	ID int `json:"id"`
+	// Title of the article
+	// in: string
+	Title string `json:"title,omitempty"`
+	// Content of the article
+	// in: string
 	Content string `json:"content,omitempty"`
-	Author  string `json:"author,omitempty"`
+	// Author of the article
+	// in: string
+	Author string `json:"author,omitempty"`
 }
