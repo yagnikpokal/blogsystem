@@ -29,17 +29,16 @@ type UtilityInterface interface {
 	ReadJSON(w http.ResponseWriter, r *http.Request, data interface{}) error
 }
 
+// HealthCheck performs a basic health check of the service.
+//
 // swagger:route GET / healthCheck
 //
-// Health Check
 // Performs a basic health check of the service.
 //
-// Produces:
-// - application/json
-//
 // Responses:
-//
-//	200: Response
+//   200: SuccessResponse
+//	500: ErrorResponse
+
 func (app *Application) HealthCheck(w http.ResponseWriter, r *http.Request) {
 	// Create the response struct
 	var response models.Response
@@ -51,17 +50,16 @@ func (app *Application) HealthCheck(w http.ResponseWriter, r *http.Request) {
 	utility.WriteJSON(w, http.StatusOK, response)
 }
 
+// AllArticle retrieves a list of articles.
+//
 // swagger:route GET /articles allArticle
-// Get a list of articles
 //
 // Retrieve a list of articles.
 //
-// Produces:
-// - application/json
-//
 // Responses:
 //
-//	200: Response
+//	200: ArticleListResponse
+//	500: ErrorResponse
 func (app *Application) AllArticle(w http.ResponseWriter, r *http.Request) {
 	// Retrieve the list of articles from the database
 	articles, err := app.ArticleService.GetAllArticles()
@@ -83,35 +81,26 @@ func (app *Application) AllArticle(w http.ResponseWriter, r *http.Request) {
 	utility.WriteJSON(w, http.StatusOK, response)
 }
 
-// swagger:route GET /articles/{id} getArticle
+// swagger:operation GET /articles/{id} getArticle
 //
 // Retrieve an article by its ID.
-//
 // ---
 // produces:
 // - application/json
 // parameters:
-
+// - name: id
 //   in: path
-//   description: The ID of the article.
 //   required: true
+//   description: The ID of the article.
 //   schema:
 //     type: integer
-//   example: 1  # Sample ID value
+//     example: 1  # Sample ID value
 // responses:
 //   "200":
-//     description: Success
-//     content:
-//       application/json:
-//         schema:
-//           $ref: '#/definitions/Article'
-//     example:
-//       status: 200
-//       message: Success
-//       data:
-//         id: 1
-//         title: "Second Article"
-//         content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+//     $ref: '#/responses/ArticleResponse'
+//   "500":
+//     $ref: '#/responses/ErrorResponse'
+// summary: Retrieve an article by its ID.
 
 func (app *Application) GetArticle(w http.ResponseWriter, r *http.Request) {
 	// Get the article ID from the URL parameter
@@ -138,39 +127,23 @@ func (app *Application) GetArticle(w http.ResponseWriter, r *http.Request) {
 	utility.WriteJSON(w, http.StatusOK, response)
 }
 
-// swagger:route POST /articles insertArticle
-//
-// Insert an article into the service.
+// swagger:operation POST /articles InsertArticle
 // ---
-// consumes:
-// - application/json
-// produces:
-// - application/json
+// summary: Create an article.
+// description: Parses a JSON request to create a new article and returns the result.
 // parameters:
-
+// - name: article
 //   in: body
-//   description: The article to be inserted.
+//   description: The article data to be created.
 //   required: true
 //   schema:
 //     $ref: '#/definitions/Article'
-//   example:
-//     title: "Second Article"
-//     content: "Lorem ipsum dolor sit amet, "
-//     author: "John"
 // responses:
-//   "201":
-//     description: Success
-//     schema:
-//       $ref: '#/definitions/Article'
-//     example:
-//       id: 1
-//       title: "Second Article"
-//       content: "Lorem ipsum dolor sit amet, "
-//       author: "John"
-//   "500":
-//     description: Internal Server Error
-//     schema:
-//       $ref: '#/definitions/Response'
+//   201:
+//     description: Created
+//     $ref: '#/responses/ArticleResponse'
+//   500:
+//     $ref: '#/responses/ErrorResponse'
 
 func (app *Application) InsertArticle(w http.ResponseWriter, r *http.Request) {
 	// Parse the JSON request body into an Article struct
