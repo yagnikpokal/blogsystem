@@ -50,15 +50,16 @@ curl --location 'http://localhost:8080/articles'
 ## Clean code / Development practice
 - Followed by using the separate business logic, db, utility, models, constants, db query, etc
 ```
-tree
 .
 ├── api
+│   ├── docs.go
 │   ├── handlers.go
 │   ├── handler_test.go
 │   ├── router_test.go
 │   └── routes.go
-├── coverage.txt
 ├── doc
+│   ├── image 10.png
+│   ├── image 11.png
 │   ├── image 1.png
 │   ├── image 2.png
 │   ├── image 3.png
@@ -66,10 +67,10 @@ tree
 │   ├── image 5.png
 │   ├── image 6.png
 │   ├── image 7.png
-│   └── image 8.png
+│   ├── image 8.png
+│   └── image 9.png
 ├── docker-compose.yml
 ├── Dockerfile
-├── do.sh
 ├── go.mod
 ├── go.sum
 ├── main.go
@@ -89,7 +90,8 @@ tree
 │   │   └── db_test.go
 │   ├── models
 │   │   ├── articles.go
-│   │   └── response.go
+│   │   ├── response.go
+│   │   └── swagger.yaml
 │   ├── repository
 │   │   └── dbrepo
 │   │       ├── postgres_dbrepo.go
@@ -98,12 +100,14 @@ tree
 │       ├── utils.go
 │       └── utils_test.go
 ├── readme.md
-└── services
-    └── articles
-        ├── articles_service.go
-        └── articles_services_test.go
-
-12 directories, 38 files, 1808 lines
+├── services
+│   └── articles
+│       ├── articles_service.go
+│       └── articles_services_test.go
+├── swagger copy.yaml
+├── swagger.json
+└── swagger.yaml
+12 directories, 44 files, 13372 lines
 ```
 
 ## Test coverage

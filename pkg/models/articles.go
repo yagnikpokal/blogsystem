@@ -1,6 +1,6 @@
 package models
 
-// Article represents a article with id, title, and content.
+// Article
 //
 // swagger:response Article
 type Article struct {

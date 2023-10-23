@@ -1,6 +1,6 @@
 package models
 
-// Response represents a response with status, message, and data.
+// Response
 //
 // swagger:response Response
 type Response struct {

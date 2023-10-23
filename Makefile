@@ -40,6 +40,8 @@ help:
 	@echo "Usage:"
 	@echo "make serve: Serve Swagger UI"
 	@echo "make help: Display help message"
+lineofcode:
+	find . -type f -exec cat {} \; | wc -l
 
 test:
 	go test ./...
