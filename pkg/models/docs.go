@@ -47,12 +47,17 @@ type ResponseCreateArticle struct {
 	Body struct {
 		Status  int    `json:"status"`
 		Message string `json:"message"`
-		Data    ID     `json:"data"`
+		Data    int    `json:"data"`
 	}
 }
 
-type ID struct {
-	// ID of the article
-	// in: int
+// IDParameter represents the 'id' parameter in the Swagger schema.
+//
+// swagger:parameters idParameter
+type IDParameter struct {
+	// in: path
+	// required: true
+	// type: int
+	// example: 1
 	ID int `json:"id"`
 }

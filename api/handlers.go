@@ -81,26 +81,16 @@ func (app *Application) AllArticle(w http.ResponseWriter, r *http.Request) {
 	utility.WriteJSON(w, http.StatusOK, response)
 }
 
-// swagger:operation GET /articles/{id} getArticle
+// swagger:route GET /articles/{id} idParameter
 //
 // Retrieve an article by its ID.
 // ---
 // produces:
 // - application/json
-// parameters:
-// - name: id
-//   in: path
-//   required: true
-//   description: The ID of the article.
-//   schema:
-//     type: integer
-//     example: 1  # Sample ID value
-// responses:
-//   "200":
-//     $ref: '#/responses/ArticleResponse'
-//   "500":
-//     $ref: '#/responses/ErrorResponse'
-// summary: Retrieve an article by its ID.
+// Responses:
+//
+//	200: ArticleListResponse
+//	500: ErrorResponse
 
 func (app *Application) GetArticle(w http.ResponseWriter, r *http.Request) {
 	// Get the article ID from the URL parameter

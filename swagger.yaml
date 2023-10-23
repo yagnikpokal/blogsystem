@@ -26,15 +26,6 @@ definitions:
                     in: string
                 type: string
         type: object
-    ID:
-        properties:
-            id:
-                description: |-
-                    ID of the article
-                    in: int
-                format: int64
-                type: integer
-        type: object
     Response:
         description: Response
         properties:
@@ -90,20 +81,19 @@ paths:
             summary: Create an article.
     /articles/{id}:
         get:
-            operationId: getArticle
+            operationId: idParameter
             parameters:
-                - description: The ID of the article.
+                - example: 1
+                  format: int
                   in: path
                   name: id
                   required: true
-                  schema:
-                    example: 1
-                    type: integer
+                  type: integer
             produces:
                 - application/json
             responses:
                 "200":
-                    $ref: '#/responses/ArticleResponse'
+                    $ref: '#/responses/ArticleListResponse'
                 "500":
                     $ref: '#/responses/ErrorResponse'
             summary: Retrieve an article by its ID.
@@ -182,7 +172,8 @@ responses:
         schema:
             properties:
                 data:
-                    $ref: '#/definitions/ID'
+                    format: int64
+                    type: integer
                 message:
                     type: string
                 status:
